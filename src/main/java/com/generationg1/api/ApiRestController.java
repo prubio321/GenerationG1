@@ -20,5 +20,29 @@ public class ApiRestController {
         return listaAutos;
     }
 
+    @RequestMapping("/crear/autos")
+    public Auto crearAutos(Auto auto){
+        autoService.guardarAuto(auto);;
+        return auto;
+    }
+
+    @RequestMapping("/editar/autos")
+    public Auto editarAutos(Auto auto){
+        autoService.guardarAuto(auto);;
+        return auto;
+    }
+
+    @RequestMapping("/eliminarById/autos")
+    public long eliminarById(long id){
+        autoService.eliminarPorId(id);
+        return id;
+    }
+
+    @RequestMapping("/getAutoById/autos")
+    public Auto getAutoById(long id){
+        Auto auto = autoService.buscarId(id);
+        return auto;
+    }
+
     //API (JSON)..
 }

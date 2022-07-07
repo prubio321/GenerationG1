@@ -122,5 +122,14 @@ public class AutoController {
         return "autosPaginados.jsp";
     }
 
+    @RequestMapping("/editarAutoAjax") //editar para el despliegue
+    public String editaAutoAjax() {
+
+
+
+
+        return "editarAutoAjax.jsp";//redireccionar a otra url o path
+    }
+
 }
 
