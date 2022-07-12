@@ -1,8 +1,8 @@
 package com.generationg1.controllers;
 
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
-import com.generationg1.models.Usuario;
-import com.generationg1.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,58 +12,93 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.Valid;
+import com.generationg1.models.Usuario;
+import com.generationg1.services.UsuarioService;
 
 @Controller
 @RequestMapping("/registro")
-public class RegistroController {
+public class RegistroController {//localhost:8080/registro
 
     //inyeccion de dependencias
     @Autowired
     UsuarioService usuarioService;
 
-    //ruta por default
+
+    //ruta para desplegar el jsp, ruta por default
     @RequestMapping("")
     public String registro(@ModelAttribute("usuario") Usuario usuario) {
         //pasamos el objeto usuario vacio
 
-        return "registro.jsp"; //pagina a desplegar
+        return "registro.jsp"; //la pagina a deplegar
     }
+
+
 
     //ruta para capturar los datos del formulario, //localhost:8080/registro/usuario
     @PostMapping("/usuario/respaldo")
-    public String registroUsuario(@RequestParam(value = "gato") String nombre,
-                                  @RequestParam(value = "apellido") String apellido,
-                                  @RequestParam(value = "edad") String edad
+    public String registroUsuario(@RequestParam(value="gato") String nombre,
+                                  @RequestParam(value="apellido") String apellido,
+                                  @RequestParam(value="edad") String edad
     ) {
+        System.out.println("parametro gato "+nombre);
+        System.out.println("parametro apellido  "+apellido);
+        System.out.println("parametro edad "+edad);
 
-        System.out.println(("parametro gato ") + nombre);
-        System.out.println(("parametro apellido ") + apellido);
-        System.out.println(("parametro edad ") + edad);
-
-        return "registro.jsp"; //pagina usuario a desplegar
-
+        return "registro.jsp"; //la pagina a deplegar
     }
 
     @PostMapping("/usuario")
     public String guardarUsuario(@Valid @ModelAttribute("usuario") Usuario usuario,
                                  BindingResult resultado,
                                  Model model) {
-        if (resultado.hasErrors()) {//capturamos si existe un error en el ingreso de datos desde el jsp
-            model.addAttribute("msgError", "Debe ingresar valores correctos");
+
+
+        if(resultado.hasErrors()) {//capturando si existe un error en el igreso de datos desde el jsp
+            model.addAttribute("msgError", "Debe realizar ingreso correcto de los datos");
             return "registro.jsp";
-        } else {
+        }else {
+
             //capturamos el objeto con los atributos llenos
-            System.out.println(usuario.getNombre() + " " + usuario.getApellido() + " " + usuario.getEdad());
+            System.out.println(usuario.getNombre()+" "+usuario.getApellido()+ " "+ usuario.getEdad());
 
-
+            String variable= "";
             //enviar el objeto al service
-            usuarioService.saveUsuario(usuario);
+            boolean usuarioCreado= usuarioService.saveUsuario(usuario);
 
-            return "index.jsp"; //pagina a desplegar
+            if(usuarioCreado) {
+                model.addAttribute("msgError", "El email ya esta registrado");
+                return "registro.jsp";
+            }else {
+                return "login.jsp";
+            }
         }
-
     }
+    @RequestMapping("/usuario/ingreso")
+    public String ingresoUsuario(@RequestParam(value="email") String email,
+                                 @RequestParam(value="password") String password,
+                                 Model model, HttpSession session) {
+        /**validaciones a realizar*/
+        //validar que los parametros no son null o vacios
+        if(email==null || password ==null ||  email.isEmpty() || password.isEmpty()) {
+            model.addAttribute("msgError", "Todos los campos son obligatorios");
+            return "login.jsp";
+        }
+        //si es true, indica que hay un error el bd
+        boolean usuarioValidado = usuarioService.validarUsuario(email,password);
 
+        if(usuarioValidado){
+            model.addAttribute("msgError", "Error en el ingreso al sistema");
+            return "login.jsp";
+        }else {
+            //no hay error, puede ingresar al sistema
+            session.setAttribute("email", email);
+
+            return "redirect:/home";
+        }
+    }
+    @RequestMapping("/usuario/login")
+    public String login() {
+        return "login.jsp";
+    }
 
 }

@@ -22,6 +22,8 @@
         <input type="submit" class="btn btn-primary">
     </form>
     <br>
+    <a href="/auto">Crear auto</a>
+
     <!-- Tabla -->
     <table class="table">
         <thead>

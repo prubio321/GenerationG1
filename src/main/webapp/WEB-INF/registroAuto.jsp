@@ -18,8 +18,7 @@
     <c:if test="${msgError!= null}">
         <c:out value="${msgError}"></c:out>
     </c:if>
-    <%--@elvariable id="auto" type="java"--%>
-    <form:form action="/auto/registro" method="post" modelAttribute="auto">
+    <form:form action="/auto/guardar" method="post" modelAttribute="auto">
         <form:label path="marca" class="form-label" >Marca:</form:label>
         <form:input path="marca" class="form-control" />
         <br>
@@ -34,6 +33,8 @@
         <br>
         <button type="submit" class="btn btn-outline-primary">Guardar Auto</button>
     </form:form>
+
+    <a href="/auto/mostrar" class="btn btn-primary">Mostrar lista de Autos</a>
 </div>
 </body>
 </html>
